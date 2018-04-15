@@ -95,7 +95,6 @@ public class DatabaseProvider extends ContentProvider {
                 cursor = db.query("Category", projection, "id = ?" , new String[]
                         { categoryId }, null, null, sortOrder);
                 break;
-
                 default:
                     break;
         }
@@ -105,7 +104,28 @@ public class DatabaseProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        // TODO: Implement this to handle requests to update one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int updateRows = 0;
+        switch (uriMatcher.match(uri)) {
+            case BOOK_DIR:
+                updateRows = db.update("Book", values, selection, selectionArgs);
+                break;
+            case BOOK_ITEM:
+                String bookId = uri.getPathSegments().get(1);
+                updateRows = db.update("Book", values, "id = ?", new String[]
+                        { bookId});
+                break;
+            case CATEGORY_DIR:
+                updateRows = db.update("Category", values, selection, selectionArgs);
+                break;
+            case CATEGORY_ITEM:
+                String categoryId = uri.getPathSegments().get(1);
+                updateRows = db.update("Category", values, "id = ?", new String[]
+                        { categoryId});
+                break;
+            default:
+                break;
+        }
+        return updateRows;
     }
 }
