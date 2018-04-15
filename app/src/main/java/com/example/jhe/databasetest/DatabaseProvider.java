@@ -44,8 +44,25 @@ public class DatabaseProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        // TODO: Implement this to handle requests to insert a new row.
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Uri uriReturn = null;
+        switch (uriMatcher.match(uri)) {
+            case BOOK_DIR:
+            case BOOK_ITEM:
+                long newBookId = db.insert("Book", null, values);
+                uriReturn = Uri.parse("content://" + AUTHORITY + "/book/" +
+                newBookId);
+                break;
+            case CATEGORY_DIR:
+            case CATEGORY_ITEM:
+                long newCategoryId = db.insert("Category", null, values);
+                uriReturn = Uri.parse("content://" + AUTHORITY + "/category/" +
+                newCategoryId);
+                break;
+                default:
+                    break;
+        }
+        return uriReturn;
     }
 
     @Override
